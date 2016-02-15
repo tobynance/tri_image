@@ -1,6 +1,12 @@
-import os, random
+from contextlib import contextmanager
+import os
+import random
 import shutil
+import tempfile
+
 from triangle import Triangle
+
+
 #######################################################################
 def string_to_ints(line):
     return [int(a) for a in line.split()]
@@ -24,3 +30,14 @@ def cleanDir(folder):
     if os.path.exists(folder):
         shutil.rmtree(folder)
     os.mkdir(folder)
+
+
+########################################################################
+@contextmanager
+def temp_directory(suffix, prefix="tmp", delete=True):
+    temp_dir = tempfile.mkdtemp(prefix=prefix, suffix=suffix)
+    try:
+        yield temp_dir
+    finally:
+        if delete:
+            shutil.rmtree(temp_dir, ignore_errors=True)

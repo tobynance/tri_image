@@ -65,14 +65,11 @@ class Seeder(object):
         """Posterize the image using the number of bits, then
         find the areas of contiguous color and make triangles out of them,
         returning the resulting sketch"""
-        print "posterity:", num_bits
+        # print "posterity:", num_bits
         im = self.source_image.convert("L")
-        #im = self.source_image.convert("RGB")
         im = ImageOps.posterize(im, num_bits)
         im = im.convert("RGB")
         areas = areasFinder.getAreas(im, 1000)
-        #finder = FindContiguousAreas(im.load(), im.size[0], im.size[1])
-        #areas = finder.run()
 
         triangles = []
         for area in areas:
@@ -84,7 +81,7 @@ class Seeder(object):
             over = len(triangles) - (self.num_triangles - num_background_triangles)
             triangles = triangles[over:]
         triangles = background_triangles + triangles
-        print "num triangles:", len(triangles)
+        # print "num triangles:", len(triangles)
         return Sketch(self.size, triangles)
 
     ###################################################################

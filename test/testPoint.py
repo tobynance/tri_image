@@ -1,7 +1,7 @@
-import sys
 from unittest import TestCase
 
-from triangular_image.point import Point
+from tri_image.point import Point
+
 
 #######################################################################
 class TestPoint(TestCase):
@@ -10,3 +10,11 @@ class TestPoint(TestCase):
         p1 = Point(0, 0)
         p2 = Point(10, 0)
         p3 = Point(10, 10)
+
+    ####################################################################
+    def test_equal(self):
+        self.fail("Unwritten")
+
+    ####################################################################
+    def test_not_equal(self):
+        self.fail("Unwritten")

@@ -1,6 +1,6 @@
-from PIL import Image
 import numpy
 import random
+
 
 #######################################################################
 def gridFromImage(im):
@@ -9,8 +9,9 @@ def gridFromImage(im):
     pix = im.load()
     for y in range(im.size[1]):
         for x in range(im.size[0]):
-            grid[x,y] = pix[x,y]
+            grid[x, y] = pix[x, y]
     return grid
+
 
 #######################################################################
 def getRandomPoints(num_points, width, height):
@@ -18,7 +19,8 @@ def getRandomPoints(num_points, width, height):
         x = random.randint(0, width-1)
         y = random.randint(0, height-1)
         yield x, y
-            
+
+
 #######################################################################
 def getAreas(im, num_points):
     grid = gridFromImage(im)
@@ -28,6 +30,7 @@ def getAreas(im, num_points):
         if area:
             areas.append(area)
     return areas
+
 
 #######################################################################
 def floodFillArea(grid, x, y):
@@ -47,15 +50,3 @@ def floodFillArea(grid, x, y):
                 if grid[a, b] == search_color:
                     pixel_queue.add((a, b))
     return area
-
-#######################################################################
-def main():
-    im = Image.open("2.png")
-    #im = Image.open("rembrandt_med.jpg")
-    
-    areas = getAreas(im, 1000)
-    print "areas:", len(areas)
-
-#######################################################################
-if __name__ == "__main__":
-    main()

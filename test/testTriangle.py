@@ -1,11 +1,13 @@
-import sys, math, Image
-from unittest import TestCase
+import sys, math
+from PIL import Image
 
-from triangular_image.triangle import Triangle
-from triangular_image.point import Point
+from test.utils import BaseTest
+from tri_image.triangle import Triangle
+from tri_image.point import Point
+
 
 #######################################################################
-class TestTriangle(TestCase):
+class TestTriangle(BaseTest):
     ###################################################################
     def test_constructor(self):
         c = (0, 0, 0)
@@ -13,7 +15,7 @@ class TestTriangle(TestCase):
 
     ###################################################################
     def test_area(self):
-        ### a triangle has three points, and 4 color bands (RGBA)
+        # a triangle has three points, and 4 color bands (RGBA)
         c = (0, 0, 0)
         t = Triangle([0, 0, 10, 0, 10, 10], c, 255)
         self.assertEqual(t.getArea(), 50)
@@ -24,8 +26,7 @@ class TestTriangle(TestCase):
         t = Triangle([0, 0, 5, 0, 5, 10], c, 255)
         self.assertEqual(t.getArea(), 25)
 
-        ### I need to test some non-right triangles, as well as non-axially
-        ### aligned triangles
+        self.fail("I need to test some non-right triangles, as well as non-axially aligned triangles")
 
     ###################################################################
     def test_coordinates(self):
@@ -63,8 +64,8 @@ class TestTriangle(TestCase):
     def test_scale(self):
         c = (0, 0, 0)
         t = Triangle([0, 0, 10, 0, 10, 10], c, 255)
-        ##0 10 10
-        ##0  0 10
+        # 0 10 10
+        # 0  0 10
         center_x = 20.0/3
         center_y = 10.0/3
 
@@ -86,8 +87,8 @@ class TestTriangle(TestCase):
     def test_getCentroid(self):
         c = (0, 0, 0)
         t = Triangle([0, 0, 10, 0, 10, 10], c, 255)
-        #0 10 10
-        #0  0 10
+        # 0 10 10
+        # 0  0 10
         center_x = 20.0/3
         center_y = 10.0/3
         self.assertEquals(t.getCentroid(), Point(center_x, center_y))
@@ -96,8 +97,8 @@ class TestTriangle(TestCase):
     def test_movePoint(self):
         c = (0, 0, 0)
         t = Triangle([0, 0, 10, 0, 10, 10], c, 255)
-        #0 10 10
-        #0  0 10
+        # 0 10 10
+        # 0  0 10
         t.movePoint(0, 2, 2)
         t.movePoint(1, 23, -6)
         t.movePoint(2, -14, 42)
@@ -110,22 +111,18 @@ class TestTriangle(TestCase):
         t.rotate(2 * math.pi)
         self.assertEquals(t.coordinates, [0, 0, 10, 0, 10, 10])
 
-        #t = Triangle([0, 0, 10, 0, 10, 10], c, 255)
-        #t.rotate(2 * math.pi)
-        #self.assertEquals(t.coordinates, [0, 0, 10, 0, 10, 10])
-
     ###################################################################
     def test_setColor(self):
         c = (255, 0, 0)
         t = Triangle([0, 0, 10, 0, 10, 10], c, 255)
-        im = Image.open("../data/input/black.png")
+        im = Image.open(self._data("black.png"))
         t.setColor(im)
         self.assertEqual(t.color, (0, 0, 0))
         self.assertEqual(t.opacity, 255)
 
         c = (255, 0, 0)
         t = Triangle([0, 0, 10, 0, 10, 10], c, 255)
-        im = Image.open("../data/input/green.png")
+        im = Image.open(self._data("green.png"))
         t.setColor(im)
         self.assertEqual(t.color, (0, 255, 0))
         self.assertEqual(t.opacity, 255)

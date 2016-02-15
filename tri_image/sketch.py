@@ -4,8 +4,9 @@ from point import Point
 from triangle import Triangle
 from utils import string_to_ints
 
-### The higher the number, the more fewer triangles will be favored
+# The higher the number, the more fewer triangles will be favored
 TRIANGLE_WEIGHT = 100
+
 
 #######################################################################
 class Sketch(object):
@@ -46,7 +47,7 @@ class Sketch(object):
 
     ###################################################################
     def getImage(self):
-        if self.image == None:
+        if self.image is None:
             self.image = Image.new("RGB", (self.size.x, self.size.y), (0, 0, 0))
             draw = aggdraw.Draw(self.image)
             for tri in self.triangles:

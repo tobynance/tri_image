@@ -1,26 +1,26 @@
-import os, sys, datetime, glob
+import os, datetime, glob
 from PIL import Image
 from seeder import Seeder
 from evolver import Evolver
 from sketch import Sketch
 import utils
-BASE_INPUT_FOLDER="../../data/input/"
-BASE_OUTPUT_FOLDER="../../data/output/"
 
-#######################################################################
+
+########################################################################
 class Application(object):
+    ####################################################################
     def __init__(self):
         self.evolver = None
 
-    ###################################################################
+    ####################################################################
     def run(self, source_image, output_folder, num_triangles, save_frequency, start_from=None, continueRun=False):
-        im = Image.open(os.path.join(BASE_INPUT_FOLDER, source_image))
-        output_folder = os.path.join(BASE_OUTPUT_FOLDER, output_folder)
+        im = Image.open(source_image)
         assert(not (start_from and continueRun))
-        ### NOTE: you should only use start_from or continueRun, not both
+        # NOTE: you should only use start_from or continueRun, not both
         sketch = None
+        e = None
         if continueRun:
-            ### find the latest file in the folder
+            # find the latest file in the folder
             filenames = glob.glob(os.path.join(output_folder, "intermediate_???.txt"))
             best = -1
             for filename in filenames:
@@ -33,7 +33,7 @@ class Application(object):
                 sketch = Sketch.read(filename)
                 e = Evolver(im, output_folder, num_triangles, save_frequency, save_index=best+1)
 
-        if sketch == None:
+        if sketch is None:
             utils.cleanDir(output_folder)
             if start_from:
                 sketch = Sketch.read(start_from)
@@ -43,6 +43,9 @@ class Application(object):
             sketch.saveImage(os.path.join(output_folder, "test_seeded.png"))
             sketch.saveFile(os.path.join(output_folder, "test_seeded.txt"))
             e = Evolver(im, output_folder, num_triangles, save_frequency)
+        if e is None:
+            print "Not able to create Evolver - bailing."
+            return
         self.evolver = e
         print "start evolution..."
         better = e.evolve(sketch)
