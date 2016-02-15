@@ -1,0 +1,5 @@
+git+https://github.com/tobynance/aggdraw.git@master
+nose
+numpy
+pillow
+
