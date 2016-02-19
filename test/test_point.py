@@ -1,4 +1,4 @@
-from unittest import TestCase
+from unittest import TestCase, skip
 
 from tri_image.point import Point
 
@@ -7,14 +7,16 @@ from tri_image.point import Point
 class TestPoint(TestCase):
     ###################################################################
     def test_constructor(self):
-        p1 = Point(0, 0)
-        p2 = Point(10, 0)
-        p3 = Point(10, 10)
+        Point(0, 0)
+        Point(10, 0)
+        Point(10, 10)
 
     ####################################################################
+    @skip
     def test_equal(self):
         self.fail("Unwritten")
 
     ####################################################################
+    @skip
     def test_not_equal(self):
         self.fail("Unwritten")

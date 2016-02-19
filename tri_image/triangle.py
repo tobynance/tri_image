@@ -1,5 +1,8 @@
-import math, itertools
+import itertools
+import math
+
 from PIL import Image, ImageDraw, ImageStat
+
 from point import Point
 
 
@@ -11,7 +14,7 @@ class Triangle(object):
         self.opacity = opacity
 
     ###################################################################
-    def getArea(self):
+    def get_area(self):
         c = self.coordinates
         return abs((c[0] * (c[3] - c[5]) +
                     c[2] * (c[5] - c[1]) +
@@ -28,14 +31,14 @@ class Triangle(object):
         return Triangle(self.coordinates[:], self.color, self.opacity)
 
     ###################################################################
-    def getCentroid(self):
+    def get_centroid(self):
         x = sum(self.coordinates[::2])/3.0
         y = sum(self.coordinates[1::2])/3.0
         return Point(x, y)
 
     ###################################################################
     def scale(self, amount):
-        center = self.getCentroid()
+        center = self.get_centroid()
         xs = self.coordinates[::2]
         ys = self.coordinates[1::2]
         dxs = [x - center.x for x in xs]
@@ -47,13 +50,13 @@ class Triangle(object):
         self.coordinates = list(itertools.chain(*zip(new_xs, new_ys)))
 
     ###################################################################
-    def movePoint(self, index, dx, dy):
+    def move_point(self, index, dx, dy):
         self.coordinates[index * 2] += dx
         self.coordinates[1 + (index * 2)] += dy
 
     ###################################################################
     def rotate(self, radians):
-        center = self.getCentroid()
+        center = self.get_centroid()
         xs = self.coordinates[::2]
         ys = self.coordinates[1::2]
         dxs = [x - center.x for x in xs]
@@ -65,8 +68,7 @@ class Triangle(object):
         self.coordinates = list(itertools.chain(*zip(new_xs, new_ys)))
 
     ###################################################################
-    def setColor(self, im):
-        #im = im.convert("RGBA")
+    def set_color(self, im):
         new_im = Image.new("1", im.size, color=0)
         draw = ImageDraw.Draw(new_im)
         draw.polygon(self.coordinates, fill=1)
@@ -74,13 +76,3 @@ class Triangle(object):
         st = ImageStat.Stat(im, new_im)
         self.color = tuple([int(round(x)) for x in st.median])
         self.opacity = 255
-
-    ###################################################################
-    #def setMedianColor(self, im):
-    #    new_im = Image.new("1", im.size, color=0)
-    #    draw = ImageDraw.Draw(new_im)
-    #    draw.polygon([tuple(x) for x in self.points], fill=1)
-    #
-    #    st = ImageStat.Stat(im, new_im)
-    #    self.color = [int(round(x)) for x in st.median]
-    #    self.alpha = self.color.pop(-1)

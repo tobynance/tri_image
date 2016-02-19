@@ -1,3 +1,4 @@
+import logging
 from contextlib import contextmanager
 import os
 import random
@@ -11,8 +12,9 @@ from triangle import Triangle
 def string_to_ints(line):
     return [int(a) for a in line.split()]
 
+
 #######################################################################
-def createRandomTriangles(size, num_triangles):
+def create_random_triangles(size, num_triangles):
     triangles = []
     for x in range(num_triangles):
         coords = []
@@ -25,8 +27,9 @@ def createRandomTriangles(size, num_triangles):
         triangles.append(t)
     return triangles
 
+
 #######################################################################
-def cleanDir(folder):
+def clean_dir(folder):
     if os.path.exists(folder):
         shutil.rmtree(folder)
     os.mkdir(folder)
@@ -41,3 +44,8 @@ def temp_directory(suffix, prefix="tmp", delete=True):
     finally:
         if delete:
             shutil.rmtree(temp_dir, ignore_errors=True)
+
+
+########################################################################
+def get_logger(name):
+    return logging.getLogger(name)

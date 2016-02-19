@@ -3,7 +3,7 @@ import random
 
 
 #######################################################################
-def gridFromImage(im):
+def grid_from_image(im):
     im = im.convert("L")
     grid = numpy.zeros(im.size)
     pix = im.load()
@@ -14,7 +14,7 @@ def gridFromImage(im):
 
 
 #######################################################################
-def getRandomPoints(num_points, width, height):
+def get_random_points(num_points, width, height):
     for i in range(num_points):
         x = random.randint(0, width-1)
         y = random.randint(0, height-1)
@@ -22,22 +22,22 @@ def getRandomPoints(num_points, width, height):
 
 
 #######################################################################
-def getAreas(im, num_points):
-    grid = gridFromImage(im)
+def get_areas(im, num_points):
+    grid = grid_from_image(im)
     areas = []
-    for x, y in getRandomPoints(num_points, grid.shape[0], grid.shape[1]):
-        area = floodFillArea(grid, x, y)
+    for x, y in get_random_points(num_points, grid.shape[0], grid.shape[1]):
+        area = flood_fill_area(grid, x, y)
         if area:
             areas.append(area)
     return areas
 
 
 #######################################################################
-def floodFillArea(grid, x, y):
+def flood_fill_area(grid, x, y):
     search_color = grid[x, y]
     if search_color == -1:
         return None
-    
+
     area = set()
     pixel_queue = set()
     pixel_queue.add((x, y))

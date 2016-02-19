@@ -1,5 +1,6 @@
 import datetime
 import os
+from unittest import skip
 
 from test.utils import BaseTest
 from tri_image.application import Application
@@ -8,6 +9,7 @@ from tri_image.application import Application
 #######################################################################
 class TestApplication(BaseTest):
     ###################################################################
+    @skip
     def test_run(self):
         a = Application()
         best = a.run(source_image=self._data("test.png"),
