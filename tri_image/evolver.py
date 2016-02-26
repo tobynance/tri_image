@@ -29,7 +29,7 @@ class Evolver(object):
         self.size = Point(self.source_image.size[0], self.source_image.size[1])
         self.num_triangles = num_triangles
         self.save_frequency = save_frequency
-        self.last_saved_time = datetime.datetime.now()
+        self.last_saved_time = datetime.datetime(1970, 1, 1)
         self.save_index = save_index
         self.previous_fitness = 0
         self.initial_fitness = 0
