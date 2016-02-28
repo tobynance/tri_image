@@ -15,10 +15,7 @@ class Sketch(object):
         self.image = None
         self.size = size
         self.cached_fitness = None
-        if triangles:
-            self.triangles = triangles
-        else:
-            self.triangles = []
+        self.triangles = triangles or []
 
     ####################################################################
     def clear_cached_image(self):
