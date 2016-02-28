@@ -35,7 +35,7 @@ class Evolver(object):
         self.initial_fitness = 0
 
     ###################################################################
-    def checkpoint(self):
+    def checkpoint(self, evolution_count):
         if (datetime.datetime.now() - self.last_saved_time) >= self.save_frequency:
             self.best.save_file(os.path.join(self.output_folder, "intermediate_%03d.txt" % self.save_index))
             self.best.save_image(os.path.join(self.output_folder, "intermediate_%03d.png" % self.save_index))
@@ -45,6 +45,7 @@ class Evolver(object):
             fitness = self.best.get_fitness(self.source_image)
             diff = self.previous_fitness - fitness
             diff_from_initial = self.initial_fitness - fitness
+            module_logger.info("evolution count: %s", evolution_count)
             module_logger.info("best: %s", len(self.best.triangles))
             module_logger.info("fitness diff: %s %s %s: %s", diff, diff_from_initial, 100.0 * diff_from_initial / fitness, fitness)
             self.previous_fitness = fitness
@@ -101,7 +102,7 @@ class Evolver(object):
         new_sketch = start_sketch
         count = 0
         while True:
-            self.checkpoint()
+            self.checkpoint(count)
             if self.best.get_fitness(self.source_image) == 0:
                 break
             count += 1
