@@ -22,8 +22,9 @@ class Application(object):
         self.evolver = None
 
     ####################################################################
-    def run(self, source_image, output_folder, num_triangles, save_frequency, start_from=None, continue_run=False, randomized=False):
+    def run(self, source_image, output_folder, num_triangles, save_frequency, color_type, start_from=None, continue_run=False, randomized=False):
         im = Image.open(source_image)
+        im = im.convert(mode=color_type)
         assert not (start_from and continue_run), "you should only use start_from or continue_run, not both"
         sketch = None
         e = None
@@ -39,7 +40,7 @@ class Application(object):
                 filename = os.path.join(output_folder, "intermediate_%03d.txt" % best)
                 module_logger.info("Restarting evolution based on found file 'intermediate_%03d.txt'", best)
                 sketch = Sketch.read(filename)
-                e = Evolver(im, output_folder, num_triangles, save_frequency, save_index=best+1)
+                e = Evolver(im, output_folder, num_triangles, save_frequency, color_type=color_type, save_index=best+1)
 
         if sketch is None:
             utils.clean_dir(output_folder)
@@ -47,13 +48,13 @@ class Application(object):
                 sketch = Sketch.read(start_from)
             else:
                 if randomized:
-                    seeder = RandomSeeder(im, output_folder, num_triangles)
+                    seeder = RandomSeeder(im, output_folder, num_triangles, color_type)
                 else:
-                    seeder = Seeder(im, output_folder, num_triangles)
+                    seeder = Seeder(im, output_folder, num_triangles, color_type)
                 sketch = seeder.run()
             # sketch.save_image(os.path.join(output_folder, "test_seeded.png"))
             # sketch.save_file(os.path.join(output_folder, "test_seeded.txt"))
-            e = Evolver(im, output_folder, num_triangles, save_frequency)
+            e = Evolver(im, output_folder, num_triangles, save_frequency, color_type=color_type)
         if e is None:
             module_logger.error("Not able to create Evolver - bailing.")
             return
@@ -86,14 +87,20 @@ if __name__ == "__main__":
     parser.add_argument("--num-triangles", type=int, default=50, help="Number of triangles to use to create the image.  Minimum of 10, default of 50")
     parser.add_argument("--save-frequency", type=int, default=60, help="Number of seconds between auto-saves, default is 60 seconds")
     parser.add_argument("--randomized", action="store_true", default=False, help="Start with random triangles, instead of kick-starting the system using Seeder. Default False")
+    parser.add_argument("--gray-scale", action="store_true", default=False, help="Create gray scale results")
     args = parser.parse_args()
     a = Application()
     if args.num_triangles < 10:
         print "--num-triangles must be at least 10!"
         sys.exit()
+    if args.gray_scale:
+        color_type = utils.GRAY_SCALE
+    else:
+        color_type = utils.RGB
     a.run(args.source_image,
           args.output_folder,
           num_triangles=args.num_triangles,
           save_frequency=datetime.timedelta(seconds=args.save_frequency),
           continue_run=True,
-          randomized=args.randomized)
+          randomized=args.randomized,
+          color_type=color_type)

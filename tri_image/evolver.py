@@ -22,7 +22,7 @@ def clamp(low, num, high):
 #######################################################################
 class Evolver(object):
     ###################################################################
-    def __init__(self, source_image, output_folder, num_triangles, save_frequency, save_index=0):
+    def __init__(self, source_image, output_folder, num_triangles, save_frequency, color_type, save_index=0):
         self.source_image = source_image
         self.best = None
         self.output_folder = output_folder
@@ -33,6 +33,7 @@ class Evolver(object):
         self.save_index = save_index
         self.previous_fitness = 0
         self.initial_fitness = 0
+        self.color_type = color_type
 
     ###################################################################
     def checkpoint(self, evolution_count):
@@ -66,11 +67,15 @@ class Evolver(object):
     ###################################################################
     def randomly_change_color(self, triangle):
         variance = 50
-        index = random.randint(0, 2)
-        c = list(triangle.color)
-        c[index] += random.randint(-variance, variance)
-        c[index] = clamp(0, c[index], 255)
-        triangle.color = tuple(c)
+        if self.color_type == utils.RGB:
+            index = random.randint(0, 2)
+            c = list(triangle.color)
+            c[index] += random.randint(-variance, variance)
+            c[index] = clamp(0, c[index], 255)
+            triangle.color = tuple(c)
+        else:
+            value = triangle.color + random.randint(-variance, variance)
+            triangle.color += clamp(0, value, 255)
 
     ###################################################################
     def randomly_change_opacity(self, triangle):
@@ -107,15 +112,18 @@ class Evolver(object):
                 break
             count += 1
             new_sketch = self.best.clone()
-            index = random.randint(0, len(new_sketch.triangles) - 1)
-            triangle = new_sketch.triangles[index]
-            mutation = random.choice(POSSIBLE_MUTATIONS)
+            if len(new_sketch.triangles) == 0:
+                mutation = ADD_TRIANGLE
+            else:
+                index = random.randint(0, len(new_sketch.triangles) - 1)
+                triangle = new_sketch.triangles[index]
+                mutation = random.choice(POSSIBLE_MUTATIONS)
             if mutation == REMOVE_TRIANGLE:
                 if len(new_sketch.triangles) > MINIMUM_NUM_TRIANGLES:
                     del new_sketch.triangles[index]
             if mutation == ADD_TRIANGLE:
                 if len(new_sketch.triangles) < self.num_triangles:
-                    triangle = utils.create_random_triangles(self.size, 1)[0]
+                    triangle = utils.create_random_triangles(self.size, 1, self.color_type)[0]
                     new_sketch.triangles.append(triangle)
             if mutation == CHANGE_LEVEL:
                 new_index = random.randint(0, len(new_sketch.triangles) - 1)

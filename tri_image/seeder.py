@@ -5,18 +5,19 @@ from PIL import ImageOps
 import areas_finder
 from point import Point
 from sketch import Sketch
+from utils import RGB
 from triangle import Triangle
-import utils
 
 
 #######################################################################
 class BaseSeeder(object):
     ####################################################################
-    def __init__(self, source_image, output_folder, num_triangles):
+    def __init__(self, source_image, output_folder, num_triangles, color_type):
         self.source_image = source_image
         self.size = Point(self.source_image.size[0], self.source_image.size[1])
         self.output_folder = output_folder
         self.num_triangles = num_triangles
+        self.color_type = color_type
 
     ####################################################################
     def run(self):
@@ -41,12 +42,15 @@ class Seeder(BaseSeeder):
 
         Returns: List(tri_image.triangle.Triangle) of length 2
         """
-        c = (0, 0, 0)
+        if self.color_type == RGB:
+            c = (0, 0, 0)
+        else:
+            c = 0
 
         t1 = Triangle([min_x, min_y, min_x, max_y, max_x, max_y], c, 255)
-        t1.set_color(self.source_image)
+        t1.set_color(self.source_image, self.color_type)
         t2 = Triangle([min_x, min_y, max_x, min_y, max_x, max_y], c, 255)
-        t2.set_color(self.source_image)
+        t2.set_color(self.source_image, self.color_type)
         return [t1, t2]
 
     ###################################################################
@@ -76,9 +80,12 @@ class Seeder(BaseSeeder):
         Args:
             num_bits: int
         """
-        im = self.source_image.convert("L")
-        im = ImageOps.posterize(im, num_bits)
-        im = im.convert("RGB")
+        if self.color_type == RGB:
+            im = self.source_image.convert("L")
+            im = ImageOps.posterize(im, num_bits)
+            im = im.convert("RGB")
+        else:
+            im = ImageOps.posterize(self.source_image, num_bits)
         areas = areas_finder.get_areas(im, 1000)
 
         triangles = []
@@ -91,7 +98,7 @@ class Seeder(BaseSeeder):
             over = len(triangles) - (self.num_triangles - num_background_triangles)
             triangles = triangles[over:]
         triangles = background_triangles + triangles
-        return Sketch(self.size, triangles)
+        return Sketch(self.size, self.color_type, triangles)
 
     ###################################################################
     def filter_and_sort_triangles(self, triangles):
@@ -142,9 +149,10 @@ class Seeder(BaseSeeder):
 class RandomSeeder(BaseSeeder):
     ###################################################################
     def run(self):
-        triangles = utils.create_random_triangles(self.size, self.num_triangles)
-        s = Sketch(self.size, triangles)
-        return s
+        return Sketch(self.size, self.color_type)
+        # triangles = utils.create_random_triangles(self.size, self.num_triangles)
+        # s = Sketch(self.size, triangles)
+        # return s
 
 
 #######################################################################

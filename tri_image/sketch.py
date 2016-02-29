@@ -2,7 +2,7 @@ from PIL import Image, ImageStat, ImageChops
 import aggdraw
 from point import Point
 from triangle import Triangle
-from utils import string_to_ints
+from utils import string_to_ints, RGB
 
 # The higher the number, the more the fitness function will favor solutions with fewer triangles
 TRIANGLE_WEIGHT = 100
@@ -11,9 +11,11 @@ TRIANGLE_WEIGHT = 100
 ########################################################################
 class Sketch(object):
     ####################################################################
-    def __init__(self, size, triangles=None):
+    def __init__(self, size, color_type, triangles=None):
+        assert isinstance(color_type, basestring)
         self.image = None
         self.size = size
+        self.color_type = color_type
         self.cached_fitness = None
         self.triangles = triangles or []
 
@@ -24,11 +26,20 @@ class Sketch(object):
     ####################################################################
     @staticmethod
     def read_file_obj(file_obj):
-        x, y = string_to_ints(file_obj.readline())
-        s = Sketch(Point(x, y))
+        first_line = file_obj.readline()
+        items = first_line.split()
+        x, y = [int(a) for a in items[:2]]
+        if len(items) == 3:
+            color_type = items[2]
+        else:
+            color_type = RGB
+        s = Sketch(Point(x, y), color_type)
         for line in file_obj:
             items = string_to_ints(line)
-            t = Triangle(items[:6], tuple(items[6:9]), items[9])
+            if color_type == RGB:
+                t = Triangle(items[:6], tuple(items[6:9]), items[9])
+            else:
+                t = Triangle(items[:6], items[6], items[7])
             s.triangles.append(t)
         return s
 
@@ -40,10 +51,13 @@ class Sketch(object):
 
     ####################################################################
     def save_file_obj(self, file_obj):
-        file_obj.write("%d %d\n" % (self.size.x, self.size.y))
+        file_obj.write("%d %d %s\n" % (self.size.x, self.size.y, self.color_type))
         for tri in self.triangles:
             file_obj.write(" ".join([str(x) for x in tri.coordinates]))
-            file_obj.write(" %d %d %d " % tri.color)
+            if self.color_type == RGB:
+                file_obj.write(" %d %d %d " % tri.color)
+            else:
+                file_obj.write(" %d " % tri.color)
             file_obj.write("%d\n" % tri.opacity)
 
     ####################################################################
@@ -54,7 +68,11 @@ class Sketch(object):
     ####################################################################
     def get_image(self):
         if self.image is None:
-            self.image = Image.new("RGB", (self.size.x, self.size.y), (0, 0, 0))
+            if self.color_type == RGB:
+                black = (0, 0, 0)
+            else:
+                black = 0
+            self.image = Image.new(self.color_type, (self.size.x, self.size.y), black)
             draw = aggdraw.Draw(self.image)
             for tri in self.triangles:
                 b = aggdraw.Brush(tri.color, tri.opacity)
@@ -83,7 +101,7 @@ class Sketch(object):
 
     ####################################################################
     def clone(self):
-        s = Sketch(self.size)
+        s = Sketch(self.size, self.color_type)
         for tri in self.triangles:
             s.triangles.append(tri.clone())
         return s
