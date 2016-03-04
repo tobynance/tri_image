@@ -15,54 +15,44 @@ from sketch import Sketch
 module_logger = logging.getLogger(__name__)
 
 
-########################################################################
-class Application(object):
-    ####################################################################
-    def __init__(self):
-        self.evolver = None
+####################################################################
+def get_evolver_and_sketch(source_image, output_folder, num_triangles, save_frequency, color_type, start_from=None, continue_run=False, randomized=False):
+    im = Image.open(source_image)
+    im = im.convert(mode=color_type)
+    assert not (start_from and continue_run), "you should only use start_from or continue_run, not both"
+    sketch = None
+    e = None
+    if continue_run:
+        # find the latest file in the folder
+        file_names = glob.glob(os.path.join(output_folder, "intermediate_???.txt"))
+        best = -1
+        for filename in file_names:
+            num = int(filename[-7:-4])
+            if num > best:
+                best = num
+        if best >= 0:
+            filename = os.path.join(output_folder, "intermediate_%03d.txt" % best)
+            module_logger.info("Restarting evolution based on found file 'intermediate_%03d.txt'", best)
+            sketch = Sketch.read(filename)
+            e = Evolver(im, output_folder, num_triangles, save_frequency, color_type=color_type, save_index=best+1)
 
-    ####################################################################
-    def run(self, source_image, output_folder, num_triangles, save_frequency, color_type, start_from=None, continue_run=False, randomized=False):
-        im = Image.open(source_image)
-        im = im.convert(mode=color_type)
-        assert not (start_from and continue_run), "you should only use start_from or continue_run, not both"
-        sketch = None
-        e = None
-        if continue_run:
-            # find the latest file in the folder
-            file_names = glob.glob(os.path.join(output_folder, "intermediate_???.txt"))
-            best = -1
-            for filename in file_names:
-                num = int(filename[-7:-4])
-                if num > best:
-                    best = num
-            if best >= 0:
-                filename = os.path.join(output_folder, "intermediate_%03d.txt" % best)
-                module_logger.info("Restarting evolution based on found file 'intermediate_%03d.txt'", best)
-                sketch = Sketch.read(filename)
-                e = Evolver(im, output_folder, num_triangles, save_frequency, color_type=color_type, save_index=best+1)
+    # Preferred is to load from the auto-save, but in case it died while saving the above will still work
+    filename = os.path.join(output_folder, "auto_save.txt")
+    if os.path.exists(filename):
+        sketch = Sketch.read(filename)
 
-        if sketch is None:
-            utils.clean_dir(output_folder)
-            if start_from:
-                sketch = Sketch.read(start_from)
+    if sketch is None:
+        utils.clean_dir(output_folder)
+        if start_from:
+            sketch = Sketch.read(start_from)
+        else:
+            if randomized:
+                seeder = RandomSeeder(im, output_folder, num_triangles, color_type)
             else:
-                if randomized:
-                    seeder = RandomSeeder(im, output_folder, num_triangles, color_type)
-                else:
-                    seeder = Seeder(im, output_folder, num_triangles, color_type)
-                sketch = seeder.run()
-            # sketch.save_image(os.path.join(output_folder, "test_seeded.png"))
-            # sketch.save_file(os.path.join(output_folder, "test_seeded.txt"))
-            e = Evolver(im, output_folder, num_triangles, save_frequency, color_type=color_type)
-        if e is None:
-            module_logger.error("Not able to create Evolver - bailing.")
-            return
-        self.evolver = e
-        module_logger.info("start evolution...")
-        better = e.evolve(sketch)
-        better.save_image(os.path.join(output_folder, "test_evolve.png"))
-        better.save_file(os.path.join(output_folder, "test_evolve.txt"))
+                seeder = Seeder(im, output_folder, num_triangles, color_type)
+            sketch = seeder.run()
+        e = Evolver(im, output_folder, num_triangles, save_frequency, color_type=color_type)
+    return e, sketch
 
 
 ########################################################################
@@ -77,8 +67,8 @@ def initialize_logging():
     root.addHandler(ch)
 
 
-#######################################################################
-if __name__ == "__main__":
+########################################################################
+def parse_options():
     initialize_logging()
 
     parser = argparse.ArgumentParser(description="Run a toy evolution program to draw pictures using triangles")
@@ -89,7 +79,6 @@ if __name__ == "__main__":
     parser.add_argument("--randomized", action="store_true", default=False, help="Start with random triangles, instead of kick-starting the system using Seeder. Default False")
     parser.add_argument("--gray-scale", action="store_true", default=False, help="Create gray scale results")
     args = parser.parse_args()
-    a = Application()
     if args.num_triangles < 10:
         print "--num-triangles must be at least 10!"
         sys.exit()
@@ -97,10 +86,22 @@ if __name__ == "__main__":
         color_type = utils.GRAY_SCALE
     else:
         color_type = utils.RGB
-    a.run(args.source_image,
-          args.output_folder,
-          num_triangles=args.num_triangles,
-          save_frequency=datetime.timedelta(seconds=args.save_frequency),
-          continue_run=True,
-          randomized=args.randomized,
-          color_type=color_type)
+
+    application_options = dict(
+        source_image=args.source_image,
+        output_folder=args.output_folder,
+        num_triangles=args.num_triangles,
+        save_frequency=datetime.timedelta(seconds=args.save_frequency),
+        continue_run=True,
+        randomized=args.randomized,
+        color_type=color_type)
+
+    return application_options
+
+
+#######################################################################
+if __name__ == "__main__":
+    options = parse_options()
+    evolver, starting_sketch = get_evolver_and_sketch(**options)
+    module_logger.info("start evolution...")
+    evolver.evolve(starting_sketch)

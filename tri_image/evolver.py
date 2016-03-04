@@ -22,14 +22,16 @@ def clamp(low, num, high):
 #######################################################################
 class Evolver(object):
     ###################################################################
-    def __init__(self, source_image, output_folder, num_triangles, save_frequency, color_type, save_index=0):
+    def __init__(self, source_image, output_folder, num_triangles, save_frequency, color_type, save_index=0, auto_save_frequency=None):
         self.source_image = source_image
         self.best = None
         self.output_folder = output_folder
         self.size = Point(self.source_image.size[0], self.source_image.size[1])
         self.num_triangles = num_triangles
         self.save_frequency = save_frequency
+        self.auto_save_frequency = auto_save_frequency or datetime.timedelta(seconds=10)  # save every 5 seconds
         self.last_saved_time = datetime.datetime(1970, 1, 1)
+        self.last_auto_saved_time = self.last_saved_time
         self.save_index = save_index
         self.previous_fitness = 0
         self.initial_fitness = 0
@@ -50,6 +52,9 @@ class Evolver(object):
             module_logger.info("best: %s", len(self.best.triangles))
             module_logger.info("fitness diff: %s %s %s: %s", diff, diff_from_initial, 100.0 * diff_from_initial / fitness, fitness)
             self.previous_fitness = fitness
+        if (datetime.datetime.now() - self.last_auto_saved_time) >= self.auto_save_frequency:
+            self.best.save_file(os.path.join(self.output_folder, "auto_save.txt"))
+            self.last_auto_saved_time = datetime.datetime.now()
 
     ###################################################################
     def randomly_move_triangle(self, tri, variance):
