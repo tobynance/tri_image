@@ -36,9 +36,10 @@ class Evolver(object):
         self.previous_fitness = 0
         self.initial_fitness = 0
         self.color_type = color_type
+        self.generation_count = 0
 
     ###################################################################
-    def checkpoint(self, evolution_count):
+    def checkpoint(self):
         if (datetime.datetime.now() - self.last_saved_time) >= self.save_frequency:
             self.best.save_file(os.path.join(self.output_folder, "intermediate_%03d.txt" % self.save_index))
             self.best.save_image(os.path.join(self.output_folder, "intermediate_%03d.png" % self.save_index))
@@ -48,7 +49,7 @@ class Evolver(object):
             fitness = self.best.get_fitness(self.source_image)
             diff = self.previous_fitness - fitness
             diff_from_initial = self.initial_fitness - fitness
-            module_logger.info("evolution count: %s", evolution_count)
+            module_logger.info("evolution count: %s", self.generation_count)
             module_logger.info("best: %s", len(self.best.triangles))
             module_logger.info("fitness diff: %s %s %s: %s", diff, diff_from_initial, 100.0 * diff_from_initial / fitness, fitness)
             self.previous_fitness = fitness
@@ -109,13 +110,10 @@ class Evolver(object):
         self.best = start_sketch
         self.previous_fitness = self.best.get_fitness(self.source_image)
         self.initial_fitness = self.previous_fitness
-        new_sketch = start_sketch
-        count = 0
         while True:
-            self.checkpoint(count)
+            self.checkpoint()
             if self.best.get_fitness(self.source_image) == 0:
                 break
-            count += 1
             new_sketch = self.best.clone()
             if len(new_sketch.triangles) == 0:
                 mutation = ADD_TRIANGLE
@@ -139,7 +137,4 @@ class Evolver(object):
 
             if new_sketch.get_fitness(self.source_image) <= self.best.get_fitness(self.source_image):
                 self.best = new_sketch
-        module_logger.info("evolved: %s", len(new_sketch.triangles))
-        module_logger.info("%s %s", self.best.get_fitness(self.source_image), start_sketch.get_fitness(self.source_image))
-        module_logger.info("evolution count: %s", count)
-        return self.best
+            self.generation_count += 1
