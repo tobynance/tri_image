@@ -19,3 +19,8 @@ To get this working in a virtual environment on linux, I had to install the ubun
 Example usage:
 
 python gui.py ../input_images/mona_lisa.jpg ../evolved_results/mona_lisa_500 --num-triangles 500
+
+To make a video of the results:
+
+ffmpeg -r 10  -i picasso_500/intermediate_%03d.png picasso.mp4
+
