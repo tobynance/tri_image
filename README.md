@@ -21,6 +21,18 @@ Example usage:
 python gui.py ../input_images/mona_lisa.jpg ../evolved_results/mona_lisa_500 --num-triangles 500
 
 To make a video of the results:
-
+```
 ffmpeg -r 10  -i picasso_500/intermediate_%03d.png picasso.mp4
+```
 
+To make a complicated video with variable speed and side-by-side comparisons:
+run `make_video.py`, then copy the 1st hundred images into a folder named *1*, then images 100-499 into a folder named *2*,
+and the rest into a folder named *3*.
+Then, run:
+
+```
+ffmpeg -r 10 -i 1/combined_%04d.png picasso_1.mp4
+ffmpeg -r 20 -start_number 100 -i 2/combined_%04d.png picasso_2.mp
+ffmpeg -r 30 -start_number 500 -i 3/combined_%04d.png picasso_3.mp4
+mencoder picasso_1.mp4 picasso_2.mp4 picasso_3.mp4 -ovc lavc -lavcopts vcodec=mpeg4:vbitrate=1800 -o picasso.avi
+```
