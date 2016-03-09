@@ -7,7 +7,8 @@ http://rogeralsing.com/2008/12/07/genetic-programming-evolution-of-mona-lisa/
 Original Slashdot post about it:
 http://developers.slashdot.org/story/08/12/09/0238252/evolution-of-mona-lisa-via-genetic-programming
 
-To get this working in a virtual environment on Linux (Linux Mint), I had to install the ubuntu package `python-pil.imagetk` then copy
+To get the GUI version working in a virtual environment named `tri_image` on Linux (Linux Mint), I had to install the
+ubuntu package `python-pil.imagetk` then copy
 `/usr/lib/python2.7/dist-packages/PIL/_imagingtk.so` to `~/.virtualenvs/tri_image/lib/python2.7/site-packages/PIL/_imagingtk.so`.
 
 Example usage:
