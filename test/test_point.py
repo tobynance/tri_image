@@ -12,11 +12,11 @@ class TestPoint(TestCase):
         Point(10, 10)
 
     ####################################################################
-    @skip
+    @skip("unwritten")
     def test_equal(self):
         self.fail("Unwritten")
 
     ####################################################################
-    @skip
+    @skip("unwritten")
     def test_not_equal(self):
         self.fail("Unwritten")

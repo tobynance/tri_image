@@ -5,7 +5,6 @@ import random
 import shutil
 import tempfile
 
-from triangle import Triangle
 
 GRAY_SCALE = "L"
 RGB = "RGB"
@@ -18,6 +17,7 @@ def string_to_ints(line):
 
 ########################################################################
 def create_random_triangles(size, num_triangles, color_type):
+    import triangle
     triangles = []
     for x in range(num_triangles):
         coords = []
@@ -26,11 +26,11 @@ def create_random_triangles(size, num_triangles, color_type):
             coords.append(random.randint(0, size.x))
             coords.append(random.randint(0, size.y))
         if color_type == GRAY_SCALE:
-            t = Triangle(coords, random.randint(0, 255), random.randint(0, 255))
+            t = triangle.Triangle(coords, random.randint(0, 255), random.randint(0, 255))
         else:
             for i in range(3):
                 color.append(random.randint(0, 255))
-            t = Triangle(coords, tuple(color), random.randint(0, 255))
+            t = triangle.Triangle(coords, tuple(color), random.randint(0, 255))
         triangles.append(t)
     return triangles
 

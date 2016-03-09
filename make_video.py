@@ -71,9 +71,13 @@ def generate_combined_folder(left_folder, right_folder, combined_folder):
 
 ########################################################################
 def main():
-    generate_combined_folder("/home/tnance/projects/tri_image/evolved_results/mona_lisa_500_randomized",
-                             "/home/tnance/projects/tri_image/evolved_results/mona_lisa_500",
-                             "/home/tnance/projects/tri_image/evolved_results/mona_lisa_combined")
+    generate_combined_folder("/home/tnance/projects/tri_image/evolved_results/mona_50_randomized",
+                             "/home/tnance/projects/tri_image/evolved_results/mona_50",
+                             "/home/tnance/projects/tri_image/evolved_results/mona_50_combined")
+
+    # generate_combined_folder("/home/tnance/projects/tri_image/evolved_results/american_gothic_500_randomized",
+    #                          "/home/tnance/projects/tri_image/evolved_results/american_gothic_500",
+    #                          "/home/tnance/projects/tri_image/evolved_results/american_gothic_combined")
 
     # generate_combined_folder("/home/tnance/projects/tri_image/evolved_results/picasso_500_randomized",
     #                          "/home/tnance/projects/tri_image/evolved_results/picasso_500",

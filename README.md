@@ -15,11 +15,10 @@ Example usage:
 
 ```
 # For GUI version (you can actively watch the evolution)
-python gui.py ../input_images/mona_lisa.jpg ../evolved_results/mona_lisa_500 --num-triangles 500
+python gui.py ../examples/input_images/mona_lisa.jpg ../mona_lisa_500 --num-triangles 500
 
 # For non-GUI version
-python application.py ../input_images/mona_lisa.jpg ../evolved_results/mona_lisa_500 --num-triangles 500
-
+python application.py ../examples/input_images/mona_lisa.jpg ../mona_lisa_500 --num-triangles 500
 ```
 
 To make a video of the results:
@@ -30,7 +29,8 @@ ffmpeg -r 10  -i picasso_500/intermediate_%03d.png picasso.mp4
 ```
 
 To make a complicated video with variable speed and side-by-side comparisons:
-run `make_video.py`, then copy the 1st hundred images into a folder named *1*, then images 100-499 into a folder named *2*,
+run `make_video.py` (which is just a hacked together script, not at all polished), then copy the 1st hundred images
+into a folder named *1*, then images 100-499 into a folder named *2*,
 and the rest into a folder named *3*.
 Then, run:
 

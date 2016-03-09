@@ -37,6 +37,9 @@ class Evolver(object):
         self.initial_fitness = 0
         self.color_type = color_type
         self.generation_count = 0
+        self.min_fitness = self.size.x * self.size.y * 128
+        if self.color_type == utils.RGB:
+            self.min_fitness *= 3
 
     ###################################################################
     def checkpoint(self):
@@ -51,7 +54,12 @@ class Evolver(object):
             diff_from_initial = self.initial_fitness - fitness
             module_logger.info("evolution count: %s", self.generation_count)
             module_logger.info("best: %s", len(self.best.triangles))
-            module_logger.info("fitness diff: %s %s %s: %s", diff, diff_from_initial, 100.0 * diff_from_initial / fitness, fitness)
+            match = 100.0 * (self.min_fitness - fitness) / self.min_fitness
+            print "self.min_fitness:", self.min_fitness
+            print "fitness:", fitness
+            # 2110464
+            # 149493076
+            module_logger.info("fitness diff: %s %s %s: %s (%0.1f%% match)", diff, diff_from_initial, 100.0 * diff_from_initial / fitness, fitness, match)
             self.previous_fitness = fitness
         if (datetime.datetime.now() - self.last_auto_saved_time) >= self.auto_save_frequency:
             self.best.save_file(os.path.join(self.output_folder, "auto_save.txt"))

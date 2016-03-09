@@ -7,6 +7,7 @@ from test.utils import BaseTest
 from tri_image.triangle import Triangle
 from tri_image.point import Point
 from tri_image.sketch import Sketch
+from tri_image.utils import RGB
 
 data_folder = os.path.join(os.path.dirname(__file__), "data")
 
@@ -15,14 +16,14 @@ data_folder = os.path.join(os.path.dirname(__file__), "data")
 class TestSketch(BaseTest):
     ###################################################################
     def test_constructor(self):
-        Sketch(Point(65, 65))
-        Sketch(Point(65, 65), [1, 2, 3])
+        Sketch(Point(65, 65), RGB)
+        Sketch(Point(65, 65), RGB, [1, 2, 3])
 
     ###################################################################
     def test_save(self):
         t1 = Triangle([0, 0, 10, 0, 10, 10], (255, 0, 0), 255)
         t2 = Triangle([37, 18, 22, 64, 3, 2], (0, 255, 0), 128)
-        s = Sketch(Point(65, 65), [t1, t2])
+        s = Sketch(Point(65, 65), RGB, [t1, t2])
         s.save_file(self._out("test.txt"))
         saved_file = open(self._out("test.txt")).read().strip()
         expected_file = open(self._data("sketch01.txt")).read().strip()
@@ -72,7 +73,7 @@ class TestSketch(BaseTest):
         im2 = Image.open(self._data("test.png"))
         self.assertAlmostEqual(s.get_fitness(im2), 200)
 
-        s = Sketch(Point(65, 65))
+        s = Sketch(Point(65, 65), RGB)
         self.assertEqual(s.get_fitness(im2), 130382)
 
     ###################################################################

@@ -9,6 +9,7 @@ from PIL import Image
 
 from tri_image.evolver import Evolver
 from tri_image.seeder import Seeder
+from tri_image.utils import RGB
 
 data_folder = os.path.join(os.path.dirname(__file__), "data")
 
@@ -19,7 +20,7 @@ class RandomNumber(object):
         self.index = 0
 
     ###################################################################
-    def __call__(self):
+    def __call__(self, *args):
         self.index += 1
         return self.index
 
@@ -62,7 +63,8 @@ class BaseTest(TestCase):
         return Evolver(source_image=Image.open(self._data("test.png")),
                        output_folder=self._out("test_1"),
                        num_triangles=2,
-                       save_frequency=datetime.timedelta(seconds=2))
+                       save_frequency=datetime.timedelta(seconds=2),
+                       color_type=RGB)
 
     ####################################################################
     def get_seeder(self, input_image=os.path.join(data_folder, "test.png"), num_triangles=2):
@@ -70,4 +72,5 @@ class BaseTest(TestCase):
             input_image = Image.open(input_image)
         return Seeder(source_image=input_image,
                       output_folder=os.path.join(self.out_folder, "test_1"),
-                      num_triangles=num_triangles)
+                      num_triangles=num_triangles,
+                      color_type=RGB)

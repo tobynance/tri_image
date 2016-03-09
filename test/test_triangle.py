@@ -6,6 +6,7 @@ from PIL import Image
 from test.utils import BaseTest
 from tri_image.triangle import Triangle
 from tri_image.point import Point
+from tri_image import utils
 
 
 #######################################################################
@@ -16,7 +17,6 @@ class TestTriangle(BaseTest):
         Triangle([0, 0, 10, 0, 10, 10], c, 255)
 
     ###################################################################
-    @skip
     def test_area(self):
         # a triangle has three points, and 4 color bands (RGBA)
         c = (0, 0, 0)
@@ -29,6 +29,9 @@ class TestTriangle(BaseTest):
         t = Triangle([0, 0, 5, 0, 5, 10], c, 255)
         self.assertEqual(t.get_area(), 25)
 
+    ###################################################################
+    @skip("unwritten")
+    def test_area2(self):
         self.fail("I need to test some non-right triangles, as well as non-axially aligned triangles")
 
     ###################################################################
@@ -119,13 +122,13 @@ class TestTriangle(BaseTest):
         c = (255, 0, 0)
         t = Triangle([0, 0, 10, 0, 10, 10], c, 255)
         im = Image.open(self._data("black.png"))
-        t.set_color(im)
+        t.set_color(im, color_type=utils.RGB)
         self.assertEqual(t.color, (0, 0, 0))
         self.assertEqual(t.opacity, 255)
 
         c = (255, 0, 0)
         t = Triangle([0, 0, 10, 0, 10, 10], c, 255)
         im = Image.open(self._data("green.png"))
-        t.set_color(im)
+        t.set_color(im, color_type=utils.RGB)
         self.assertEqual(t.color, (0, 255, 0))
         self.assertEqual(t.opacity, 255)

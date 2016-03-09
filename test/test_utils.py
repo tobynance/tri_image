@@ -13,13 +13,13 @@ class TestUtils(BaseTest):
     @with_random
     def test_create_random_triangles(self):
         e = self.get_evolver()
-        items = utils.create_random_triangles(e.size, 2)
+        items = utils.create_random_triangles(e.size, 2, utils.RGB)
         self.assertEqual(len(items), 2)
         self.assertTrue(isinstance(items[0], Triangle))
-        self.assertEqual(items[0].coordinates, [1, 2, 4, 5, 7, 8])
-        self.assertEqual(items[0].color, (3, 6, 9))
+        self.assertEqual(items[0].coordinates, [1, 2, 3, 4, 5, 6])
+        self.assertEqual(items[0].color, (7, 8, 9))
         self.assertEqual(items[0].opacity, 10)
 
-        items = utils.create_random_triangles(e.size, 4)
+        items = utils.create_random_triangles(e.size, 4, utils.RGB)
         self.assertEqual(len(items), 4)
         self.assertTrue(isinstance(items[0], Triangle))

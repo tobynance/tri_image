@@ -11,21 +11,6 @@ data_folder = os.path.join(os.path.dirname(__file__), "data")
 #######################################################################
 class TestSeeder(BaseTest):
     ###################################################################
-    def test_constructor(self):
-        self.get_seeder()
-
-    ###################################################################
-    @skip
-    def test_Seeder_run(self):
-        s = self.get_seeder()
-
-        # should return the best sketch that the seeder can make
-        sketch = s.run()
-        sketch.save_image(os.path.join(self.out_folder, "seed.png"))
-        sketch.save_file(os.path.join(self.out_folder, "seed.txt"))
-        self.fail("No assertion made")
-
-    ###################################################################
     def test_get_triangles_for_area(self):
         s = self.get_seeder()
         source_im = Image.open(os.path.join(data_folder, "black.png"))
@@ -36,18 +21,9 @@ class TestSeeder(BaseTest):
         self.assertEqual(triangles[1].coordinates, [0, 0, 64, 0, 64, 64])
 
     ###################################################################
-    @skip
-    def test_get_sketch_for_posterity(self):
-        s = self.get_seeder()
-        num_bits = 1
-        sketch = s.get_sketch_for_posterity(num_bits)
-
-        self.fail("No assertion made")
-
-    ###################################################################
     def test_filter_triangles(self):
         s = self.get_seeder()
-        triangles = utils.create_random_triangles(s.size, 20)
+        triangles = utils.create_random_triangles(s.size, 20, utils.RGB)
         new_triangles = s.filter_and_sort_triangles(triangles)
 
         self.assertTrue(len(new_triangles) <= s.num_triangles)
