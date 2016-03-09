@@ -40,3 +40,8 @@ ffmpeg -r 20 -start_number 100 -i 2/combined_%04d.png picasso_2.mp
 ffmpeg -r 30 -start_number 500 -i 3/combined_%04d.png picasso_3.mp4
 mencoder picasso_1.mp4 picasso_2.mp4 picasso_3.mp4 -ovc lavc -lavcopts vcodec=mpeg4:vbitrate=1800 -o picasso.avi
 ```
+
+Here's an example of it in action.  The vide has a non-seeded version (ran with `--randomized` flag) on the
+left, and seeded version on right.  The time is in hh:mm.
+
+<a href="examples/picasso.mp4">Picasso</a>
